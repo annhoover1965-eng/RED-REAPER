@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#151214">
+<title>RED REAPER — BTD6 Companion Preview</title>
+<style>
+:root{color-scheme:dark;--red:#f23b45;--bg:#151214;--panel:#241b1e;--line:#583036;--muted:#bcaeb1}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#392025 0,#151214 48%);font:15px system-ui,Arial,sans-serif;color:#fff;min-height:100vh}
+header{padding:20px 16px 12px;position:sticky;top:0;background:#171315ed;backdrop-filter:blur(10px);z-index:2;border-bottom:1px solid var(--line)}
+.brand{font-size:27px;font-weight:900;letter-spacing:2px;color:var(--red)}.sub{font-size:11px;color:var(--muted);letter-spacing:1.3px}
+main{max-width:760px;margin:auto;padding:14px}.notice{border:1px solid #79504b;background:#2b2020;padding:12px;border-radius:12px;color:#f6d7d7;font-size:12px;line-height:1.45;margin-bottom:12px}
+nav{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
+button,select{font:inherit}button{background:#342428;color:#fff;border:1px solid var(--line);padding:11px;border-radius:10px;font-weight:700}
+button.active,.primary{background:var(--red);border-color:var(--red);color:#160d0f}
+.card{background:linear-gradient(145deg,#291f22,#1d181a);border:1px solid var(--line);border-radius:15px;padding:15px;margin:10px 0}
+h2{font-size:16px;margin:0 0 12px;color:#ff7279}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #3b2c30}.row:last-child{border:0}
+.small{font-size:12px;color:var(--muted)}input[type=checkbox]{accent-color:var(--red);width:21px;height:21px}
+input[type=range]{width:100%;accent-color:var(--red)}select,input[type=text]{background:#171315;border:1px solid var(--line);color:#fff;padding:10px;border-radius:9px;width:100%}
+label{display:block;margin:12px 0 6px;color:#e8dadd}.value{color:#ff858a;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.tile{background:#20191b;border:1px solid #493036;border-radius:10px;padding:10px;font-size:13px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1}
+footer{text-align:center;color:#927f83;font-size:11px;padding:22px}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#f23b45;color:#160d0f;padding:10px 16px;border-radius:99px;font-weight:800;display:none;z-index:5}
+</style>
+</head>
+<body>
+<header><div class="brand">RED REAPER</div><div class="sub">BTD6 COMPANION • ANDROID UI PREVIEW</div></header>
+<main>
+<div class="notice"><b>Prototype only:</b> this is a standalone interface preview. Its switches and sliders do not change BTD6, grant currency, unlock content, or spawn towers. Actual game integration needs a compatible Android mod loader.</div>
+<nav>
+<button class="active" data-tab="main">MAIN MODS</button><button data-tab="towers">TOWER EDITOR</button>
+<button data-tab="paragons">PARAGON LAB</button><button data-tab="gacha">GACHA MONKEY</button>
+<button data-tab="sandbox">SANDBOX</button><button data-tab="settings">SETTINGS</button>
+</nav>
+<section id="main" class="tab">
+<div class="card"><h2>MAIN MODS</h2><div id="mainToggles"></div></div>
+</section>
+<section id="towers" class="tab" hidden>
+<div class="card"><h2>ALL-TOWER CUSTOMIZER</h2>
+<label for="tower">Choose a tower</label><select id="tower"></select>
+<div class="row"><span>Damage multiplier</span><span class="value" id="damageVal">1×</span></div><input id="damage" type="range" min="1" max="100" value="1">
+<div class="row"><span>Attack speed multiplier</span><span class="value" id="speedVal">1×</span></div><input id="speed" type="range" min="1" max="100" value="1">
+<div class="row"><span>Range multiplier</span><span class="value" id="rangeVal">1×</span></div><input id="range" type="range" min="1" max="20" value="1">
+<label for="effect">Projectile / visual effect</label><select id="effect"><option>Default</option><option>Crimson glow (concept)</option><option>Shadow trail (concept)</option><option>Golden burst (concept)</option></select>
+<div class="actions"><button class="primary" id="savePreset">Save preview preset</button><button id="resetTower">Reset sliders</button></div>
+<p class="small" id="presetStatus">Presets are stored only in this browser preview.</p>
+</div></section>
+<section id="paragons" class="tab" hidden>
+<div class="card"><h2>PARAGON LAB</h2><div class="notice">Concept editor for official and fan-made Paragon ideas. Custom Paragons are not present in the game through this preview.</div>
+<label for="paragon">Tower / Paragon concept</label><select id="paragon"></select>
+<div class="row"><span>Degree</span><span class="value" id="degreeVal">100</span></div><input id="degree" type="range" min="1" max="100" value="100">
+<div class="row"><span>Custom Paragon concept</span><input id="customParagon" type="checkbox"></div>
+<button class="primary" id="saveParagon">Save Paragon concept</button><p class="small" id="paragonStatus"></p>
+</div></section>
+<section id="gacha" class="tab" hidden>
+<div class="card"><h2>GACHA MONKEY</h2>
+<div class="tile">Gacha Monkey ideas and collection settings — cosmetic concepts only.</div>
+<div id="gachaToggles"></div>
+<label for="rewardName">Custom reward idea</label><input id="rewardName" type="text" placeholder="Name a skin or reward idea">
+<button class="primary" id="addReward">Add reward idea</button><div id="rewards" class="grid" style="margin-top:10px"></div>
+</div></section>
+<section id="sandbox" class="tab" hidden>
+<div class="card"><h2>SANDBOX TOOL IDEAS</h2>
+<div id="sandboxToggles"></div>
+<label for="bloon">Custom Bloon idea</label><select id="bloon"><option>Red Bloon</option><option>Blue Bloon</option><option>MOAB</option><option>BFB</option><option>ZOMG</option><option>BAD</option><option>Custom concept</option></select>
+<button class="primary" id="addBloon">Add to concept list</button><div id="bloonList" class="grid" style="margin-top:10px"></div>
+</div></section>
+<section id="settings" class="tab" hidden>
+<div class="card"><h2>MENU SETTINGS</h2>
+<div class="row"><span>Theme</span><span class="value">Red / Black</span></div>
+<div class="row"><span>Opening style</span><span class="value">Floating-button concept</span></div>
+<div class="row"><span>Orientation</span><span class="value">Portrait + Landscape</span></div>
+<div class="row"><span>Menu visibility demo</span><input id="menuVisible" type="checkbox" checked></div>
+<p class="small">A real Android floating overlay requires an Android app, overlay permission, and a compatible game integration. This browser preview cannot draw over other apps.</p>
+</div></section>
+<footer>RED REAPER • PREVIEW BUILD • NOT CONNECTED TO BTD6</footer>
+</main><div id="toast"></div>
+<script>
+const towers=["Dart Monkey","Boomerang Monkey","Bomb Shooter","Tack Shooter","Ice Monkey","Glue Gunner","Sniper Monkey","Monkey Sub","Monkey Buccaneer","Monkey Ace","Heli Pilot","Mortar Monkey","Dartling Gunner","Wizard Monkey","Super Monkey","Ninja Monkey","Alchemist","Druid","Banana Farm","Monkey Village","Engineer Monkey","Beast Handler"];
+const mainMods=["Infinite Money","Infinite Lives","Unlock All Towers","Fast Attack Speed","God Mode","Instant Ability Cooldown","Max Tower Upgrades","Custom Bloon Spawner"];
+const gachaMods=["Spawn Gacha Monkey (concept)","Custom Gacha Monkey skins","Custom rewards","Unlimited spins (concept)"];
+const sandboxMods=["Spawn Paragons in Sandbox (concept)","Degree 100 Paragons (concept)","Multiple Paragons (concept)","Custom Bloon spawner (concept)","Custom Paragon for every tower (concept)"];
+function toggleList(id,items){document.getElementById(id).innerHTML=items.map((x,i)=>`<div class="row"><span>${x}</span><input type="checkbox" aria-label="${x}" id="${id}${i}"></div>`).join("")}
+toggleList("mainToggles",mainMods);toggleList("gachaToggles",gachaMods);toggleList("sandboxToggles",sandboxMods);
+document.getElementById("tower").innerHTML=towers.map(x=>`<option>${x}</option>`).join("");
+document.getElementById("paragon").innerHTML=towers.map(x=>`<option>${x}</option>`).join("");
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".tab").forEach(s=>s.hidden=s.id!==b.dataset.tab)});
+["damage","speed","range","degree"].forEach(id=>document.getElementById(id).oninput=e=>document.getElementById(id+"Val").textContent=e.target.value+(id==="degree"?"":"×"));
+function toast(s){let t=document.getElementById("toast");t.textContent=s;t.style.display="block";setTimeout(()=>t.style.display="none",1900)}
+document.getElementById("savePreset").onclick=()=>{let p={tower:tower.value,damage:damage.value,speed:speed.value,range:range.value,effect:effect.value};let a=JSON.parse(localStorage.getItem("rrPresets")||"[]");a.push(p);localStorage.setItem("rrPresets",JSON.stringify(a));presetStatus.textContent=a.length+" preview preset(s) saved on this device.";toast("Preview preset saved")};
+document.getElementById("resetTower").onclick=()=>{["damage","speed","range"].forEach(id=>{document.getElementById(id).value=1;document.getElementById(id+"Val").textContent="1×"})};
+document.getElementById("saveParagon").onclick=()=>{paragonStatus.textContent=paragon.value+" concept saved at Degree "+degree.value+(customParagon.checked?" (custom fan concept)":"") ;toast("Paragon concept saved")};
+document.getElementById("addReward").onclick=()=>{let v=rewardName.value.trim();if(!v)return toast("Enter a reward idea first");let d=document.createElement("div");d.className="tile";d.textContent=v;rewards.appendChild(d);rewardName.value=""};
+document.getElementById("addBloon").onclick=()=>{let d=document.createElement("div");d.className="tile";d.textContent=bloon.value;bloonList.appendChild(d);toast("Added to concept list")};
+menuVisible.onchange=()=>toast(menuVisible.checked?"Menu visibility demo on":"Menu visibility demo off");
+</script></body></html>
